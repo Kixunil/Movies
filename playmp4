@@ -1,0 +1,14 @@
+#!/bin/bash
+
+export PLAYER="mplayer -cache 1024 -cache-min 2" # 1MiB
+#export PLAYER="wget -O download.mp4"
+
+echo
+echo 'Processing, please wait...'
+
+while read -t 0.01 A;
+do
+	echo -n
+done
+
+wget -qO - "$1" | sed -e 's/;url/;\nurl/g' -e 's/?/\n?/g' | grep 'url[0-9]\+=' | sort | uniq | tac | sed -re 's/^url([0-9]+)=/\1p /' | awk '{ print $2, $1; }' | sed 's/ /\n/g' | xargs -d '\n' dialog --menu "Select quality" 24 80 5 2> >(read URL; $PLAYER "$URL")
